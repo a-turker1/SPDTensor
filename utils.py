@@ -10,7 +10,7 @@ AVAILABLE_DEVICE_TYPES = ["cpu", "cuda"]
 def init_distributed(rank: int, world_size: int, device: str = "cpu"):
     # Init torch distributed with suitable backend
     os.environ['RANK'] = str(rank)
-    os.environ['MASTER_PORT'] = '6124'
+    os.environ['MASTER_PORT'] = '6125'
     os.environ['MASTER_ADDR'] = 'localhost'
     os.environ['WORLD_SIZE'] = str(world_size)
 
@@ -23,3 +23,6 @@ def init_distributed(rank: int, world_size: int, device: str = "cpu"):
     dist.init_process_group(backend=backend_type, rank=rank, world_size=world_size)
 
 
+
+class TensorInstructions(Enum):
+    ADD = 0

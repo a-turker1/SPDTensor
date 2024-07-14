@@ -7,7 +7,9 @@ if __name__ == '__main__':
 
     dc = distributed.DistributionCenter(4)
 
-    t = torch.ones((5,5))
+    t = torch.ones((8,5))
 
-    dc.shardTensor(t)
+    stensor1 = dc.shardTensor(t)
+    stensor2 = dc.replicateTensor(t*2)
+    res = stensor1 + stensor2
 
