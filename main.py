@@ -12,7 +12,7 @@ if __name__ == '__main__':
     stensor1 = dc.shardTensor(t)
     stensor2 = dc.replicateTensor(t*2)
     stensor3 = dc.replicateTensor(t*5)
-    res = stensor1 + stensor2
+    res = stensor1 + 5
     res2 = res + stensor3
 
 

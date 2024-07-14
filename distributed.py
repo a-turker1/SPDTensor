@@ -8,7 +8,7 @@ import torch.distributed as dist
 from torch.distributed._tensor import distribute_tensor, Shard, Replicate, DTensor, init_device_mesh, DeviceMesh
 
 import utils
-from utils import TensorInstructions
+from utils import TensorRef
 from tensor import STensor
 
 class Instructions(Enum):
@@ -73,9 +73,9 @@ class DistributionCenter:
         dist.broadcast_object_list([instruction, None, arg1, None])
 
     
-    def _tensor_callback(self, method_name:str, base_tensor: int, args: list[int]):
-        base_tensor_id = self.tensor_ref[base_tensor]
-        args = [self.tensor_ref[arg] for arg in args]
+    def _tensor_callback(self, method_name:str, base_tensor: TensorRef, args: list[TensorRef | Any]):
+        base_tensor_id = self.tensor_ref[base_tensor.id]
+        args = [self.tensor_ref[arg.id] if isinstance(arg, TensorRef) else arg for arg in args]
         dist.broadcast_object_list([Instructions.RUN_OP, method_name, base_tensor_id, args])
         return self._save_result_callback
 
@@ -126,7 +126,7 @@ class DistributionCenter:
 
                 case Instructions.RUN_OP:
                     tensor = self.tensor_ref[base_tensor]
-                    args = [self.tensor_ref[idx] for idx in args]
+                    args = [self.tensor_ref[arg.id] if isinstance(arg, TensorRef) else arg for arg in args]
                     self._run_method(instruction, tensor, args)
 
                 case _:

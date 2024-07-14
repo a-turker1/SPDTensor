@@ -1,5 +1,6 @@
 import os
 from enum import Enum
+from dataclasses import dataclass
 
 import torch
 import torch.distributed as dist
@@ -26,3 +27,8 @@ def init_distributed(rank: int, world_size: int, device: str = "cpu"):
 
 class TensorInstructions(Enum):
     ADD = 0
+
+@dataclass
+class TensorRef:
+    id: int
+    
