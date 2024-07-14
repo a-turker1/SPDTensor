@@ -1,5 +1,5 @@
-from typing import Callable, Self
 from enum import Enum
+from typing import Callable, Self
 
 import torch
 
@@ -12,7 +12,6 @@ class Strategy(Enum):
     Replicate = 1
 
 
-
 class STensor:
     # STensor works exactly like PyTorch Dtensor except one main difference,
     # for every operation it is going to it will send a message via callback
@@ -23,7 +22,10 @@ class STensor:
         self.callback = callback
 
 
-
     def __add__(self, other: Self) -> Self:
-        self.callback(self.__add__.__name__, id(self), (id(other),))
-        return self.tensor + other.tensor
+        save_callback = self.callback(self.__add__.__name__, id(self), (id(other),))
+        result = self.tensor.__add__(other.tensor)
+        result = STensor(result, self.callback)
+        save_callback(id(result))
+
+        return result

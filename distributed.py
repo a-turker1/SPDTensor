@@ -77,10 +77,17 @@ class DistributionCenter:
         base_tensor_id = self.tensor_ref[base_tensor]
         args = [self.tensor_ref[arg] for arg in args]
         dist.broadcast_object_list([Instructions.RUN_OP, method_name, base_tensor_id, args])
+        return self._save_result_callback
+
+    def _save_result_callback(self, result_id: int):
+        self.tensor_ref[result_id] = self.tensor_counter
+        self.tensor_counter += 1
         
     
     def _run_method(self, method_name: str, tensor: DTensor, args: tuple[DTensor, ...]):
         res = getattr(tensor, method_name)(*args)
+        self.tensor_ref[self.tensor_counter] = res
+        self.tensor_counter += 1
 
 
     def _initilize_distributed(self, rank:int, world_size:int):
